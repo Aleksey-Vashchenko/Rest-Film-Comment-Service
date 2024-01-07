@@ -18,9 +18,18 @@ public class Film {
     private String description;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "genres",
+            name = "films_to_genres",
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+
     private Set<Genre> genres;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinTable(
+            name = "comments",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "film_id")
+    )
+    private Set<Comment> comments;
+
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,11 +50,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "roles",
+            name = "users_to_roles",
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles ;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "comments",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Comment> comments ;
 
 
     @Override
