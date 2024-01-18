@@ -18,9 +18,12 @@ public interface UserRepository extends CrudRepository<User,Long> {
     public Optional<User> findByMail(String mail);
     public Optional<User> findByPhone(String phone);
 
+    public List<User> findByNameContaining(String search);
+
     public List<User> findAll();
 
     public Page<User> findAllBy(PageRequest pageRequest);
+    public Page<User> findAllByNameContaining(String search,PageRequest pageRequest);
 
     @Query("select ceil(count(*) / :size) from User ")
     Integer countPages(@Param("size") int size);

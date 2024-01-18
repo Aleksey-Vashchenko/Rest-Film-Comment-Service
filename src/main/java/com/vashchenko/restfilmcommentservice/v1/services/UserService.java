@@ -23,8 +23,6 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    UserMapper mapper;
 
     public User create(User user){
         if (userRepository.findByLogin(user.getLogin()).isPresent()){
@@ -42,15 +40,28 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> findAll(int page, int size){
+    public List<User> findAll(int page, int size,String search){
         if(size==0){
-            return userRepository.findAll();
+            if (search.isEmpty()){
+                return userRepository.findAll();
+            }
+            else {
+                return userRepository.findByNameContaining(search);
+            }
         }
         else {
-            PageRequest pageRequest = PageRequest.of(page,size);
-            Page<User> result = userRepository.findAllBy(pageRequest);
-            List<User> users = result.getContent();
-            return users;
+            if (search.isEmpty()){
+                PageRequest pageRequest = PageRequest.of(page,size);
+                Page<User> result = userRepository.findAllBy(pageRequest);
+                List<User> users = result.getContent();
+                return users;
+            }
+            else {
+                PageRequest pageRequest = PageRequest.of(page,size);
+                Page<User> result = userRepository.findAllByNameContaining(search,pageRequest);
+                List<User> users = result.getContent();
+                return users;
+            }
         }
     }
 

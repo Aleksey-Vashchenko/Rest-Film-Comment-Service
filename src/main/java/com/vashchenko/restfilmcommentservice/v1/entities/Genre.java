@@ -1,6 +1,7 @@
 package com.vashchenko.restfilmcommentservice.v1.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,9 +16,10 @@ import java.util.Set;
 @Data
 public class Genre {
     @Id
+    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotNull
     private String name;
 
     @ManyToMany(mappedBy = "genres", fetch = FetchType.LAZY)
