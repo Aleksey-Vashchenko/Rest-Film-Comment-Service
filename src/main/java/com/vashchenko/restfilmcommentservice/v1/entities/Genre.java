@@ -1,6 +1,7 @@
 package com.vashchenko.restfilmcommentservice.v1.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.context.annotation.Lazy;
@@ -11,6 +12,7 @@ import java.util.Set;
 @ToString(exclude = "films")
 @EqualsAndHashCode(exclude = "films")
 @Table(name = "genres")
+@Data
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
