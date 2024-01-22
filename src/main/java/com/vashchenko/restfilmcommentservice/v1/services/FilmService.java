@@ -21,21 +21,13 @@ public class FilmService {
     FilmRepository filmRepository;
 
     public List<Film> findAll(int page, int size){
-        if(size==0){
-            return filmRepository.findAll();
-        }
-        else {
             PageRequest pageRequest = PageRequest.of(page,size);
             Page<Film> result = filmRepository.findAllBy(pageRequest);
             List<Film> films = result.getContent();
             return films;
-        }
     }
 
     public Integer countPages(int size){
-        if (size==0){
-            return 1;
-        }
         return filmRepository.countPages(size);
     }
 
@@ -56,5 +48,9 @@ public class FilmService {
             throw new FilmNotFoundException();
         }
         filmRepository.deleteById(id);
+    }
+
+    public Film findById(Long id){
+         return filmRepository.findById(id).orElseThrow(() -> new FilmNotFoundException());
     }
 }

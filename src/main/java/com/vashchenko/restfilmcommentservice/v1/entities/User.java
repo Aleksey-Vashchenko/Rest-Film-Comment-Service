@@ -25,19 +25,19 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView({UserJsonViews.AdminJsonView.class, UserJsonViews.AuthJsonView.class})
+    @JsonView(UserJsonViews.DefaultView.class)
     private Long id;
 
-    @JsonView({UserJsonViews.AdminJsonView.class, UserJsonViews.UserJsonView.class, UserJsonViews.AuthJsonView.class})
+    @JsonView(UserJsonViews.DefaultView.class)
     private String name;
 
-    @JsonView({UserJsonViews.AdminJsonView.class, UserJsonViews.AuthJsonView.class})
     @Column(unique = true)
     @Size(min = 8, message = "Логин должен содержать не менее 8 символов")
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]+$",
             message = "Логин должен содержать хотя бы одну заглавную латинскую букву и хотя бы одну цифру, и разрешены только латинские буквы и цифры"
     )
+    @JsonView(UserJsonViews.AdminView.class)
     private String login;
 
     @Column(nullable = false)
@@ -46,22 +46,20 @@ public class User implements UserDetails {
             regexp = "^(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d!_]+$",
             message = "Логин должен содержать хотя бы одну заглавную латинскую букву и хотя бы одну цифру, разрешены только латинские буквы, цифры, восклицательный знак и нижнее подчеркивание"
     )
-    @JsonView({UserJsonViews.AuthJsonView.class})
     private String password;
 
     @Column(nullable = false)
-    @JsonView({UserJsonViews.AdminJsonView.class, UserJsonViews.AuthJsonView.class})
+    @JsonView(UserJsonViews.AdminView.class)
     private String mail;
 
-    @JsonView({UserJsonViews.AdminJsonView.class,UserJsonViews.AuthJsonView.class})
     @Column(nullable = false)
+    @JsonView(UserJsonViews.AdminView.class)
     private String phone;
 
-    @JsonView({UserJsonViews.AdminJsonView.class})
+    @JsonView(UserJsonViews.AdminView.class)
     @Column(nullable = false)
     private boolean isEnabled;
 
-    @JsonView({UserJsonViews.AdminJsonView.class})
     @Column(nullable = false)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -69,16 +67,16 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonView(UserJsonViews.AdminView.class)
     private List<Role> roles ;
 
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "comments",
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonView({UserJsonViews.AdminJsonView.class, UserJsonViews.UserJsonView.class})
     private List<Comment> comments ;
 
     @Override

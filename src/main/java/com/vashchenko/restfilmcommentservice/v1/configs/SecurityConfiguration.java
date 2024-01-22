@@ -3,6 +3,7 @@ package com.vashchenko.restfilmcommentservice.v1.configs;
 import com.vashchenko.restfilmcommentservice.v1.entities.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,7 +25,7 @@ public class SecurityConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails admin = User.builder()
+        /*UserDetails admin = User.builder()
                 .login("user")
                 .password("user")
                 .roles(new ArrayList<>())
@@ -32,16 +33,15 @@ public class SecurityConfiguration {
                 .mail("bla-bla-bla")
                 .phone("+2777123")
                 .build();
-        return new InMemoryUserDetailsManager(admin);
-        //return new UserDetailsServerImpl();
+        return new InMemoryUserDetailsManager(admin);*/
+        return new UserDetailsServerImplementation();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable().cors().disable()
-                .authorizeHttpRequests()
-                .anyRequest().permitAll()
-                .and()
+        return http
+                .csrf().disable()
+                .cors().disable()
                 .build();
     }
 

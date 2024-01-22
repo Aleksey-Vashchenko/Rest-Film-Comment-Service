@@ -1,5 +1,7 @@
 package com.vashchenko.restfilmcommentservice.v1.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.vashchenko.restfilmcommentservice.v1.configs.GenreJsonViews;
 import com.vashchenko.restfilmcommentservice.v1.entities.Genre;
 import com.vashchenko.restfilmcommentservice.v1.services.GenreService;
 import jakarta.validation.Valid;
@@ -17,6 +19,7 @@ public class GenresController {
     GenreService genreService;
 
     @GetMapping
+    @JsonView(GenreJsonViews.DefaultView.class)
     public List<Genre> getGenres(){
         return genreService.findAll();
     }
@@ -32,17 +35,16 @@ public class GenresController {
     }
 
     @DeleteMapping("/{genreId}")
-    public ResponseEntity deleteGenre(@PathVariable("id") Long genreId){
-        //log.info("GET / users / {}", id);
+    public ResponseEntity deleteGenre(@PathVariable("genreId") Long genreId){
         genreService.deleteGenreById(genreId);
         return ResponseEntity.status(204).build();
     }
 
-    @PatchMapping("/{genreId}")
-    public Genre update(@Valid @RequestBody Genre genre) {
-        // log.info("PATCH / user / {}", user.getLogin());
+    @PutMapping("/{genreId}")
+    public ResponseEntity update(@PathVariable("genreId") Long genreId,@Valid @RequestBody Genre genre) {
+        genre.setId(genreId);
         genreService.update(genre);
-        return genre;
+        return ResponseEntity.ok().build();
     }
 
 }

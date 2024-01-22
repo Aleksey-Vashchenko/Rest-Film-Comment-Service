@@ -1,5 +1,7 @@
 package com.vashchenko.restfilmcommentservice.v1.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.vashchenko.restfilmcommentservice.v1.configs.FilmJsonViews;
 import com.vashchenko.restfilmcommentservice.v1.entities.Film;
 import com.vashchenko.restfilmcommentservice.v1.services.FilmService;
 import jakarta.validation.Valid;
@@ -18,10 +20,16 @@ public class FilmController {
     @Autowired
     FilmService filmService;
 
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> findAll(@RequestParam(defaultValue = "1") @Min(1) int page,
-                                                       @RequestParam(defaultValue = "0") @Min(0) int size) {
-        // log.info("GET / films");
+    @GetMapping("/{filmId}")
+    @JsonView(FilmJsonViews.DefaultView.class)
+    public Film findFilmById(@PathVariable("filmId") Long filmId) {
+        return filmService.findById(filmId);
+    }
+
+    @GetMapping()
+    @JsonView(FilmJsonViews.DefaultView.class)
+    public ResponseEntity<Map<String, Object>> findAll(@RequestParam(defaultValue = "1", name = "page") @Min(1) int page,
+                                                       @RequestParam(defaultValue = "1",name = "size") @Min(1) int size) {
         Map<String, Object> response = new HashMap<>();
         response.put("films",filmService.findAll(page-1,size));
         response.put("totalPages",filmService.countPages(size));
@@ -30,7 +38,6 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity addFilm(@RequestBody Film film){
-        //log.info("POST / films / {}", film.getId());
         filmService.create(film);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.LOCATION, "/films/"+film.getId());
@@ -41,15 +48,13 @@ public class FilmController {
 
     @DeleteMapping("/{filmId}")
     public ResponseEntity deleteFilm(@PathVariable("id") Long filmId){
-        //log.info("GET / films / {}", id);
         filmService.deleteFilmById(filmId);
         return ResponseEntity.status(204).build();
     }
 
-    @PatchMapping("/{filmId}")
-    public Film update(@Valid @RequestBody Film film) {
-        // log.info("PATCH / films / {}", films.getId());
+    @PutMapping("/{filmId}")
+    public ResponseEntity update(@Valid @RequestBody Film film) {
         filmService.update(film);
-        return film;
+        return ResponseEntity.ok().build();
     }
 }

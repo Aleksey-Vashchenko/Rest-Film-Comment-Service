@@ -1,21 +1,15 @@
 package com.vashchenko.restfilmcommentservice.v1.services;
 
 import com.vashchenko.restfilmcommentservice.v1.entities.User;
-import com.vashchenko.restfilmcommentservice.v1.entities.dto.UserDTO;
-import com.vashchenko.restfilmcommentservice.v1.exceptions.BadRequestException;
 import com.vashchenko.restfilmcommentservice.v1.exceptions.DuplicatedDataException;
 import com.vashchenko.restfilmcommentservice.v1.exceptions.UserNotFoundException;
-import com.vashchenko.restfilmcommentservice.v1.mappers.UserMapper;
 import com.vashchenko.restfilmcommentservice.v1.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
