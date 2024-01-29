@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class GenresController {
         return genreService.findAll();
     }
 
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @PostMapping
     public ResponseEntity addGenre(@RequestBody Genre genre){
         genreService.create(genre);
@@ -34,12 +37,14 @@ public class GenresController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @DeleteMapping("/{genreId}")
     public ResponseEntity deleteGenre(@PathVariable("genreId") Long genreId){
         genreService.deleteGenreById(genreId);
         return ResponseEntity.status(204).build();
     }
 
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @PutMapping("/{genreId}")
     public ResponseEntity update(@PathVariable("genreId") Long genreId,@Valid @RequestBody Genre genre) {
         genre.setId(genreId);
