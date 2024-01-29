@@ -3,6 +3,7 @@ package com.vashchenko.restfilmcommentservice.v1.services;
 import com.vashchenko.restfilmcommentservice.v1.entities.Comment;
 import com.vashchenko.restfilmcommentservice.v1.entities.Film;
 import com.vashchenko.restfilmcommentservice.v1.entities.User;
+import com.vashchenko.restfilmcommentservice.v1.exceptions.BadRequestException;
 import com.vashchenko.restfilmcommentservice.v1.exceptions.CommentNotFoundException;
 import com.vashchenko.restfilmcommentservice.v1.repositories.CommentRepository;
 import com.vashchenko.restfilmcommentservice.v1.repositories.UserRepository;
@@ -51,12 +52,37 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public Comment update(Comment comment, String login){
+        if (!commentRepository.findById(comment.getId()).isPresent()){
+            throw new CommentNotFoundException();
+        }
+        User user = userService.findUserByLogin(login);
+        if(user.getId()==comment.getId()){
+            return commentRepository.save(comment);
+        }
+        else throw new BadRequestException("Нет прав для редактирования данного комментария");
+    }
+
     public void deleteCommentById(Long id){
-        Optional<Comment> user = commentRepository.findById(id);
-        if(!user.isPresent()){
+        Optional<Comment> comment = commentRepository.findById(id);
+        if(!comment.isPresent()){
             throw new CommentNotFoundException();
         }
         commentRepository.deleteById(id);
+    }
+
+    public void deleteCommentById(Long id, String login){
+        Optional<Comment> comment = commentRepository.findById(id);
+        if(!comment.isPresent()){
+            throw new CommentNotFoundException();
+        }
+        User user = userService.findUserByLogin(login);
+        if(user.getId()==comment.get().getId()){
+            commentRepository.deleteById(id);
+        }
+        else {
+            throw new BadRequestException("Нет прав для удаления данного комментария");
+        }
     }
 
     public List<Comment> findAllByFilm(int page, int size, long filmId){

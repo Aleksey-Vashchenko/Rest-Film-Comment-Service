@@ -3,6 +3,7 @@ package com.vashchenko.restfilmcommentservice.v1.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.vashchenko.restfilmcommentservice.v1.configs.UserJsonViews;
+import com.vashchenko.restfilmcommentservice.v1.configs.security.Roles;
 import com.vashchenko.restfilmcommentservice.v1.entities.User;
 import com.vashchenko.restfilmcommentservice.v1.services.UserService;
 import jakarta.validation.Valid;
@@ -11,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +28,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Secured("ROLE_MANAGER")
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody User user) {
         user.setEnabled(true);
@@ -35,14 +40,13 @@ public class UserController {
                 .build();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @PutMapping("/{userId}")
     public ResponseEntity update(@PathVariable("userId") Long userId ,@Valid @RequestBody User user) {
         userService.update(userId,user);
         return ResponseEntity.ok().build();
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     @JsonView(UserJsonViews.DefaultView.class)
     public ResponseEntity<Map<String, Object>> findAll(@RequestParam(defaultValue = "1", name = "page") @Min(1) int page,
@@ -65,11 +69,14 @@ public class UserController {
         }
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{userId}")
     @ResponseBody
-    public ResponseEntity deleteUserById(@PathVariable("userId") Long userId) {
-        userService.deleteUserById(userId);
+    public ResponseEntity deleteUserById(@PathVariable("userId") Long userId, Authentication authentication) {
+        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.ROLE_MANAGER.getAuthority()))){
+        }
+        else {
+            userService.deleteUserById(userId);
+        }
         return ResponseEntity.status(204).build();
     }
 

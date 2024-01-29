@@ -2,6 +2,7 @@ package com.vashchenko.restfilmcommentservice.v1.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.vashchenko.restfilmcommentservice.v1.configs.CommentJsonViews;
+import com.vashchenko.restfilmcommentservice.v1.configs.security.Roles;
 import com.vashchenko.restfilmcommentservice.v1.entities.Comment;
 import com.vashchenko.restfilmcommentservice.v1.entities.Film;
 import com.vashchenko.restfilmcommentservice.v1.services.CommentService;
@@ -10,6 +11,8 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -45,14 +48,25 @@ public class CommentFilmController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity deleteComment(@PathVariable("commentId") Long filmId){
-        commentService.deleteCommentById(filmId);
+    public ResponseEntity deleteComment(@PathVariable("commentId") Long commentId, Authentication authentication){
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.ROLE_ADMIN.getAuthority()))){
+            commentService.deleteCommentById(commentId);
+        }
+        else {
+            commentService.deleteCommentById(commentId,authentication.getName());
+        }
         return ResponseEntity.status(204).build();
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity update(@Valid @RequestBody Comment comment) {
-        commentService.update(comment);
+    public ResponseEntity update(@Valid @RequestBody Comment comment, Authentication authentication) {
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.ROLE_ADMIN.getAuthority()))){
+            commentService.update(comment);
+        }
+        else {
+            commentService.update(comment, authentication.getName());
+        }
+
         return ResponseEntity.ok().build();
     }
 }

@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class FilmController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @PostMapping
     public ResponseEntity addFilm(@RequestBody Film film){
         filmService.create(film);
@@ -46,12 +48,14 @@ public class FilmController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @DeleteMapping("/{filmId}")
     public ResponseEntity deleteFilm(@PathVariable("id") Long filmId){
         filmService.deleteFilmById(filmId);
         return ResponseEntity.status(204).build();
     }
 
+    @PreAuthorize("hasAuthority({'ROLE_ADMIN','ROLE_MANAGER'})")
     @PutMapping("/{filmId}")
     public ResponseEntity update(@Valid @RequestBody Film film) {
         filmService.update(film);

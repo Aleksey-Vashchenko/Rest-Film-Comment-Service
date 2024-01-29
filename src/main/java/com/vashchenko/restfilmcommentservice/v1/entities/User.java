@@ -1,6 +1,7 @@
 package com.vashchenko.restfilmcommentservice.v1.entities;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.vashchenko.restfilmcommentservice.v1.configs.security.Roles;
 import com.vashchenko.restfilmcommentservice.v1.configs.UserJsonViews;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -52,23 +53,15 @@ public class User implements UserDetails {
     @JsonView(UserJsonViews.AdminView.class)
     private String mail;
 
-    @Column(nullable = false)
-    @JsonView(UserJsonViews.AdminView.class)
-    private String phone;
-
     @JsonView(UserJsonViews.AdminView.class)
     @Column(nullable = false)
     private boolean isEnabled;
 
     @Column(nullable = false)
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "users_to_roles",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @Enumerated
     @JsonView(UserJsonViews.AdminView.class)
-    private List<Role> roles ;
+    private List<Roles> roles;
 
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -83,8 +76,8 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        for (Roles role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
         }
         return authorities;
     }

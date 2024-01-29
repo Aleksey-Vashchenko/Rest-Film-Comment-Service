@@ -1,4 +1,4 @@
-package com.vashchenko.restfilmcommentservice.v1.configs;
+package com.vashchenko.restfilmcommentservice.v1.configs.security;
 
 import com.vashchenko.restfilmcommentservice.v1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
